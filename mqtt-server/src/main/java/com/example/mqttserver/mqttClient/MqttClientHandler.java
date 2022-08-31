@@ -1,9 +1,8 @@
-package com.example.edge.mqttClient;
+package com.example.mqttserver.mqttClient;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.mqtt.MqttFixedHeader;
-import io.netty.handler.codec.mqtt.MqttMessage;
+import io.netty.handler.codec.mqtt.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -49,5 +48,23 @@ public class MqttClientHandler extends SimpleChannelInboundHandler<Object> {
             default:
                 break;
         }
+    }
+    /**
+     * Handler活跃状态，表示连接成功
+     *
+     * @param ctx
+     * @throws Exception
+     */
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("与服务端连接成功");
+        MqttFixedHeader mqttFixedHeaderBack = new MqttFixedHeader(MqttMessageType.CONNECT,false, MqttQoS.AT_MOST_ONCE, false, 0x02);
+        MqttConnectVariableHeader mqttConnectVariableHeader=new MqttConnectVariableHeader(MqttVersion.MQTT_3_1.protocolName(),MqttVersion.MQTT_3_1.protocolLevel(),false,false,false,0,false,true,60);
+
+        MqttConnectPayload payload=new MqttConnectPayload("test",null, (byte[]) null,null,null);
+        MqttConnectMessage mqttConnectMessage=new MqttConnectMessage(mqttFixedHeaderBack,mqttConnectVariableHeader,payload);
+        System.out.println(ctx.channel());
+        System.out.println(ctx.channel().isActive());
+        ctx.channel().writeAndFlush(mqttConnectMessage);
     }
 }

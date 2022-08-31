@@ -1,5 +1,8 @@
 package util;
 
+import model.DeviceModel;
+import model.MsgModel;
+
 import java.io.*;
 
 public class FileUtil {
@@ -18,18 +21,20 @@ public class FileUtil {
         bw.close();
 
     }
-    public static void readFile(String strFile){
+    public static DeviceModel readFile(String strFile){
+        String s=null;
         try{
             InputStream is = new FileInputStream(PREFIX+strFile);
             int iAvail = is.available();
             byte[] bytes = new byte[iAvail];
             is.read(bytes);
-            String s=new String(bytes);
+            s=new String(bytes);
             System.out.println(s);
             is.close();
         }catch(Exception e){
             e.printStackTrace();
         }
+        return JsonUtil.string2Obj(s,DeviceModel.class);
     }
 
     public static void main(String[] args) throws IOException {

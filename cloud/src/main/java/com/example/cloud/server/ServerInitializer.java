@@ -42,8 +42,6 @@ public class ServerInitializer extends NettyInitializer {
         ch.pipeline().addLast(new WebSocketServerProtocolHandler(webSocketPath, WEBSOCKET_PROTOCOL, true, 65536 * 10));
         // 自定义的handler，处理业务逻辑
         ch.pipeline().addLast(handler);
-        //ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.wrappedBuffer(delimiter.getBytes())));
-        //ch.pipeline().addLast(new DelimiterBasedMessageEncoder(delimiter));
         super.initChannel(ch);
 
     }

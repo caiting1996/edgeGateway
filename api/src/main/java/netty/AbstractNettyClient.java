@@ -11,6 +11,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
+/**
+ * netty服务器抽象类
+ */
 public class AbstractNettyClient {
     protected Bootstrap bootstrap;
     protected ChannelGroup channelGroup;
@@ -26,6 +29,7 @@ public class AbstractNettyClient {
         bootstrap = new Bootstrap();
         bootstrap.group(workerGroup);
         bootstrap.channel(NioSocketChannel.class);
+        //设置通道的参数
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         bootstrap.option(ChannelOption.TCP_NODELAY, true);

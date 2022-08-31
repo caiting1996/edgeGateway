@@ -16,7 +16,7 @@ public class NettyConfig {
             GlobalEventExecutor.INSTANCE);
 
     /**
-     * 存放用户与Chanel的对应信息，用于给指定用户发送消息
+     * 存放客户端与Chanel的对应信息，用于给指定客户端发送消息
      */
     private static ConcurrentHashMap<String, Channel> userChannelMap = new ConcurrentHashMap<>();
 

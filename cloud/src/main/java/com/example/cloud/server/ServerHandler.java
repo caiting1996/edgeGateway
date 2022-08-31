@@ -81,6 +81,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         String userId = ctx.channel().attr(key).get();
         NettyConfig.getUserChannelMap().remove(userId);
     }
+
+    /**
+     * 向指定的客户端发送消息
+     * @param msg
+     * @param uid
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public void sendMsg(String msg,String uid) throws ExecutionException, InterruptedException {
         ChannelGroupFuture channelFuture=NettyConfig.getChannelGroup().writeAndFlush(new TextWebSocketFrame(msg),new Macher(NettyConfig.getUserChannelMap().get(uid)));
         System.out.println(channelFuture.get());

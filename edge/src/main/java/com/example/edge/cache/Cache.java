@@ -3,20 +3,24 @@ package com.example.edge.cache;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * 边缘端缓存，用于与云端断连时缓存消息
+ */
 @Component
 public class Cache {
-    private ConcurrentHashMap map=new ConcurrentHashMap();
-    public void put(String key,Object value){
+    private static ConcurrentHashMap map=new ConcurrentHashMap();
+    public static void put(String key,Object value){
         map.put(key,value);
 
     }
-    public Object get(String key){
+    public static Object get(String key){
         return map.get(key);
     }
-    public ConcurrentHashMap getMap(){
-        return this.map;
+    public static ConcurrentHashMap getMap(){
+        return map;
     }
-    public void delete(String key){
+    public static void delete(String key){
         map.remove(key);
     }
 

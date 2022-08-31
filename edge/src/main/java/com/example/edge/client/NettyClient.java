@@ -1,6 +1,9 @@
 package com.example.edge.client;
 
 import cn.hutool.json.JSONObject;
+import com.example.edge.cache.Cache;
+import com.example.edge.config.NettyConfig;
+import com.example.edge.db.DataStorageContext;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -20,6 +23,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.Data;
+import model.MsgModel;
 import netty.AbstractNettyClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -28,6 +32,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 
@@ -115,6 +124,9 @@ public class NettyClient extends AbstractNettyClient {
         //阻塞等待是否握手成功
         handler.handshakeFuture().sync();
         System.out.println("握手成功");
+        NettyConfig.setChannel(channel);
+        handleCache(channel);
+
     }
 
 
@@ -131,5 +143,26 @@ public class NettyClient extends AbstractNettyClient {
         }).start();
     }
 
+    private void handleCache(Channel channel){
+        //重连时将缓存中的数据同步到云端
+        Map device=Cache.getMap();
+        if(device!=null){
+            Set set=device.entrySet();
+            Iterator<Map.Entry<String, Map>> iterator = set.iterator();
+            while (iterator.hasNext()){
+                Map.Entry<String, Map> entry= iterator.next();
+                Map type= (Map) device.get(entry.getKey());
+                Set typeSet=type.entrySet();
+                Iterator<Map.Entry<String,MsgModel>> typeIterator = typeSet.iterator();
+                while (typeIterator.hasNext()){
+                    Map.Entry<String,MsgModel> typeEntry=typeIterator.next();
+                    channel.writeAndFlush(typeEntry.getValue());
+                    type.remove(typeEntry.getKey());
+                }
+                device.remove(entry.getKey());
+            }
+
+        }
+    }
 
 }

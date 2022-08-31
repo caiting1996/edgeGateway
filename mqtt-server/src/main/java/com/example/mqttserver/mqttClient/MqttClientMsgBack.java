@@ -1,14 +1,12 @@
-package com.example.edge.mqttClient;
+package com.example.mqttserver.mqttClient;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.mqtt.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

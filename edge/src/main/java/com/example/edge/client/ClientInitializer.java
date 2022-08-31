@@ -21,7 +21,6 @@ public class ClientInitializer extends NettyInitializer {
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
-        //super.initChannel(ch);
         ch.pipeline().addLast(new HttpClientCodec());
         ch.pipeline().addLast(new HttpObjectAggregator(8192));
         ch.pipeline().addLast(handler);
