@@ -1,12 +1,18 @@
 package com.example.edge.client;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
+import org.springframework.stereotype.Component;
 
+import java.util.Map;
+@Component
+@ChannelHandler.Sharable
 public class ClientHeartbeatHandler extends ChannelInboundHandlerAdapter {
     private static final InternalLogger log = InternalLoggerFactory.getInstance(ClientHeartbeatHandler.class);
 

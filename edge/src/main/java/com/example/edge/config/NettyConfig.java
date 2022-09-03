@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class NettyConfig {
+    private static final String userId="test";
+    private static final String token="token";
     /**
      * 定义一个channel组，管理所有的channel
      * GlobalEventExecutor.INSTANCE 是全局的事件执行器，是一个单例
@@ -54,5 +56,13 @@ public class NettyConfig {
 
     public static void setChannel(Channel channel) {
         NettyConfig.channel = channel;
+    }
+
+    public static String getToken() {
+        return token;
+    }
+
+    public static String getUserId() {
+        return userId;
     }
 }

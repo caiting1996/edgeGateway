@@ -43,7 +43,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
         // 获取用户ID,关联channel
         JSONObject jsonObject = JSONUtil.parseObj(msg.text());
-        String uid = jsonObject.getStr("uid");
+        String uid = jsonObject.getStr("userId");
         NettyConfig.getUserChannelMap().put(uid,ctx.channel());
 
         // 将用户ID作为自定义属性加入到channel中，方便随时channel中获取用户ID

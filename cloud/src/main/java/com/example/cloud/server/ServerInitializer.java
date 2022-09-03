@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import netty.NettyInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,10 @@ import org.springframework.stereotype.Component;
 public class ServerInitializer extends NettyInitializer {
     @Autowired
     private ServerHandler handler;
+    @Autowired
+    private ServerHeartbeatHandler serverHeartbeatHandler;
+    @Autowired
+    private HttpHandler httpHandler;
     private static final String WEBSOCKET_PROTOCOL = "WebSocket";
     @Value("${webSocket.netty.path:/webSocket}")
     private String webSocketPath;
@@ -33,15 +38,22 @@ public class ServerInitializer extends NettyInitializer {
         2、这就是为什么，当浏览器发送大量数据时，就会发送多次http请求
          */
         ch.pipeline().addLast(new HttpObjectAggregator(8192));
+        ch.pipeline().addLast(httpHandler);
+        ch.pipeline().addLast(new IdleStateHandler(10, 0, 0));
         /*
         说明：
         1、对应webSocket，它的数据是以帧（frame）的形式传递
         2、浏览器请求时 ws://localhost:58080/xxx 表示请求的uri
         3、核心功能是将http协议升级为ws协议，保持长连接
         */
-        ch.pipeline().addLast(new WebSocketServerProtocolHandler(webSocketPath, WEBSOCKET_PROTOCOL, true, 65536 * 10));
+        //ch.pipeline().addLast(new WebSocketServerProtocolHandler(webSocketPath, WEBSOCKET_PROTOCOL, true, 65536 * 10));
+        ch.pipeline().addLast(new WebSocketServerProtocolHandler(webSocketPath,true));
         // 自定义的handler，处理业务逻辑
+        ch.pipeline().addLast(httpHandler);
+        ch.pipeline().addLast(serverHeartbeatHandler);
         ch.pipeline().addLast(handler);
+
+
         super.initChannel(ch);
 
     }

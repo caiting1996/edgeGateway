@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MsgModel {
-    String type;
+    private String type;
     private DeviceModel deviceModel;
+    private String userId;
 }

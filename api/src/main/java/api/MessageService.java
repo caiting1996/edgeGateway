@@ -2,9 +2,13 @@ package api;
 
 import model.MsgModel;
 
+import java.io.IOException;
+
 public interface MessageService {
-    void sendMsg(MsgModel msgModel);
-    void receiveMsg(MsgModel msgModel);
-    void storageMsg(MsgModel msgModel);
+    void sendMsg(Object obj);
+    void receiveMsg(MsgModel msgModel) throws IOException;
+    void storageMsg(MsgModel msgModel) throws IOException;
     void handleMsg(MsgModel msgModel);
+
+
 }

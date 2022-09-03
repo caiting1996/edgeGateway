@@ -103,8 +103,12 @@ public class NettyClient extends AbstractNettyClient {
     }
 
     public void start() throws URISyntaxException, InterruptedException {
-        URI websocketURI = new URI("ws://localhost:58080/webSocket");
+        String url="ws://localhost:58080/webSocket?".concat("userId=").concat(NettyConfig.getUserId()).concat("&token=").concat(NettyConfig.getToken());
+        URI websocketURI = new URI(url);
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add("userId",NettyConfig.getUserId());
+        httpHeaders.add("token", NettyConfig.getToken());
+
         //进行握手
         WebSocketClientHandshaker handshaker = WebSocketClientHandshakerFactory.newHandshaker(websocketURI, WebSocketVersion.V13, (String) null, true, httpHeaders);
         //客户端与服务端连接的通道，final修饰表示只会有一个

@@ -21,10 +21,10 @@ public class FileUtil {
         bw.close();
 
     }
-    public static DeviceModel readFile(String strFile){
+    public static DeviceModel readFile(String fileName){
         String s=null;
         try{
-            InputStream is = new FileInputStream(PREFIX+strFile);
+            InputStream is = new FileInputStream(PREFIX+fileName);
             int iAvail = is.available();
             byte[] bytes = new byte[iAvail];
             is.read(bytes);
@@ -35,6 +35,13 @@ public class FileUtil {
             e.printStackTrace();
         }
         return JsonUtil.string2Obj(s,DeviceModel.class);
+    }
+
+    public static void deleteFile(String fileName){
+        File file = new File(PREFIX+fileName);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     public static void main(String[] args) throws IOException {

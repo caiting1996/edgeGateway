@@ -42,4 +42,13 @@ public class FileStorage implements DataStorage {
 
 
     }
+
+    @Override
+    public void deleteData(String deviceId) {
+        FileUtil.deleteFile(deviceId+FILE_POST);
+    }
+
+    public void storageData(Map map) throws IOException {
+        FileUtil.writeToFile(map.get("userId")+FILE_POST, (String) map.get("token"));
+    }
 }
