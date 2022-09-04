@@ -3,7 +3,6 @@ package com.example.cloud.db;
 import api.DataStorage;
 import model.DeviceModel;
 import org.springframework.stereotype.Component;
-import util.FileUtil;
 
 import java.util.Map;
 
@@ -23,7 +22,7 @@ public class DataBaseStorage implements DataStorage {
     }
 
     @Override
-    public DeviceModel getData(String deviceId) {
+    public String getData(String deviceId) {
         return null;
     }
 

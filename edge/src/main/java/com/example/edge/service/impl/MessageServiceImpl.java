@@ -10,6 +10,8 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.mqtt.*;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 import model.MsgModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,7 @@ import java.util.List;
 
 @Service
 public class MessageServiceImpl implements MessageService {
-
-
+    private static final InternalLogger log = InternalLoggerFactory.getInstance(MessageServiceImpl.class);
     @Override
     public void sendMsg(Object obj) {
         MsgModel msgModel= (MsgModel) obj;
@@ -50,10 +51,14 @@ public class MessageServiceImpl implements MessageService {
         msgModel.setUserId(NettyConfig.getUserId());
         if(msgModel.getType().equals(MsgType.REGISTER.getType())){
             if(NettyConfig.getChannel()!=null && NettyConfig.getChannel().isActive()){
+                log.info("缓存注册数据{}",msgModel);
                 storageMsg(msgModel);
-                NettyConfig.getChannel().writeAndFlush(msgModel);
+                log.info("注册数据{}到云端",msgModel);
+                TextWebSocketFrame frame = new TextWebSocketFrame(JsonUtil.obj2String(msgModel));
+                NettyConfig.getChannel().writeAndFlush(frame);
             }else {
                 //如果云端和边缘端断开，将消息先缓存起来
+                log.info("云边连接断开，缓存数据{}",msgModel);
                 Cache.getMap().put(msgModel.getDeviceModel().getDeviceId(),new HashMap<String,MsgModel>().put(msgModel.getType(),msgModel));
             }
 
@@ -61,12 +66,16 @@ public class MessageServiceImpl implements MessageService {
             if(NettyConfig.getChannel()!=null && NettyConfig.getChannel().isActive()){
                 System.out.println(NettyConfig.getChannel());
                 TextWebSocketFrame frame = new TextWebSocketFrame(JsonUtil.obj2String(msgModel));
+                log.info("上传数据{}到云端",msgModel);
                 NettyConfig.getChannel().writeAndFlush(frame);
+                log.info("缓存上传数据{}",msgModel);
                 storageMsg(msgModel);
             }else {
+                log.info("云边连接断开，缓存数据{}",msgModel);
                 Cache.getMap().put(msgModel.getDeviceModel().getDeviceId(),new HashMap<String,MsgModel>().put(msgModel.getType(),msgModel));
             }
         }else {
+            log.info("下传数据{}",msgModel);
             String topic="/"+msgModel.getDeviceModel().getDeviceId();
             sendMsg(msgModel);
 

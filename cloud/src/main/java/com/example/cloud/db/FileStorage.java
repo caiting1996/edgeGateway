@@ -2,8 +2,9 @@ package com.example.cloud.db;
 
 import api.DataStorage;
 import model.DeviceModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import util.FileUtil;
+import com.example.cloud.util.FileUtil;
 import util.JsonUtil;
 
 import java.io.IOException;
@@ -13,6 +14,9 @@ import java.util.Set;
 
 @Component("fileStorage")
 public class FileStorage implements DataStorage {
+    @Autowired
+    private FileUtil fileUtil;
+    private static final String PREFIX="db/cloud/";
     private static final String FILE_POST=".txt";
     @Override
     public void test(){
@@ -21,17 +25,17 @@ public class FileStorage implements DataStorage {
 
     @Override
     public void storageData(DeviceModel deviceModel) throws IOException {
-        FileUtil.writeToFile(deviceModel.getDeviceId()+FILE_POST, JsonUtil.obj2String(deviceModel));
+        fileUtil.writeToFile(PREFIX+deviceModel.getDeviceId()+FILE_POST, JsonUtil.obj2String(deviceModel));
     }
 
     @Override
-    public DeviceModel getData(String deviceId) {
-        return FileUtil.readFile(deviceId+FILE_POST);
+    public String getData(String deviceId) {
+        return fileUtil.readFile(PREFIX+deviceId+FILE_POST);
     }
 
     @Override
     public void updateData(DeviceModel deviceModel) {
-        DeviceModel device=FileUtil.readFile(deviceModel.getDeviceId()+FILE_POST);
+        DeviceModel device=JsonUtil.string2Obj(fileUtil.readFile(PREFIX+deviceModel.getDeviceId()+FILE_POST),DeviceModel.class);
         Set set=deviceModel.getDeviceInfo().entrySet();
         Iterator<Map.Entry<String, Map>> iterator = set.iterator();
         while (iterator.hasNext()){
@@ -45,10 +49,10 @@ public class FileStorage implements DataStorage {
 
     @Override
     public void deleteData(String deviceId) {
-        FileUtil.deleteFile(deviceId+FILE_POST);
+        fileUtil.deleteFile(PREFIX+deviceId+FILE_POST);
     }
 
     public void storageData(Map map) throws IOException {
-        FileUtil.writeToFile(map.get("userId")+FILE_POST, (String) map.get("token"));
+        fileUtil.writeToFile(PREFIX+map.get("userId")+FILE_POST, (String) map.get("token"));
     }
 }

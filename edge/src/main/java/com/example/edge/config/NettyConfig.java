@@ -21,8 +21,8 @@ public class NettyConfig {
     /**
      * 存放设备与Chanel的对应信息，用于给指定设备发送消息
      */
-    private static ConcurrentHashMap<Channel,List> channelTopicMap = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<String, List> topicMap=new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Channel,List<String>> channelTopicMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, List<Channel>> topicMap=new ConcurrentHashMap<>();
     /**
      * 存放websocket通道
      */
@@ -42,11 +42,11 @@ public class NettyConfig {
      * @return
      * @param
      */
-    public static ConcurrentHashMap<String, List> getTopicMap(){
+    public static ConcurrentHashMap<String, List<Channel>> getTopicMap(){
         return topicMap;
     }
 
-    public static ConcurrentHashMap<Channel, List> getChannelTopicMap() {
+    public static ConcurrentHashMap<Channel, List<String>> getChannelTopicMap() {
         return channelTopicMap;
     }
 

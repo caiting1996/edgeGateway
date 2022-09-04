@@ -15,9 +15,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        System.out.println(msg);
         Map<CharSequence, CharSequence> queryMap = UrlBuilder.ofHttp(msg.uri()).getQuery().getQueryMap();
-        System.out.println(queryMap);
         CharSequence token = queryMap.get("token");
         CharSequence userId=queryMap.get("userId");
         if (token == null) {
@@ -32,7 +30,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         //    ctx.writeAndFlush("token错误").addListener(ChannelFutureListener.CLOSE);
         //    return;
         //}
-
+        ctx.channel().attr(AttributeKey.valueOf("userId")).setIfAbsent(userId.toString());
         ctx.channel().attr(AttributeKey.valueOf("token")).setIfAbsent(token.toString());
 
         ctx.fireChannelRead(msg.retain());

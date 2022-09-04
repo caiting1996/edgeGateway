@@ -1,6 +1,7 @@
 package com.example.cloud.server;
 
 
+import api.MessageService;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.cloud.config.NettyConfig;
@@ -10,10 +11,13 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
+import model.MsgModel;
 import netty.Macher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.JsonUtil;
 
 import java.util.concurrent.ExecutionException;
 
@@ -21,6 +25,8 @@ import java.util.concurrent.ExecutionException;
 @ChannelHandler.Sharable
 public class ServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
+    @Autowired
+    private MessageService messageService;
 
     /**
      * 一旦连接，第一个被执行
@@ -40,19 +46,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         log.info("服务器收到消息：{}",msg.text());
-
-        // 获取用户ID,关联channel
-        JSONObject jsonObject = JSONUtil.parseObj(msg.text());
-        String uid = jsonObject.getStr("userId");
-        NettyConfig.getUserChannelMap().put(uid,ctx.channel());
-
-        // 将用户ID作为自定义属性加入到channel中，方便随时channel中获取用户ID
-        AttributeKey<String> key = AttributeKey.valueOf("userId");
-        ctx.channel().attr(key).setIfAbsent(uid);
-
-
-        // 回复消息
-        ctx.channel().writeAndFlush(new TextWebSocketFrame("服务器连接成功！"));
+        MsgModel msgModel= JsonUtil.string2Obj(msg.text(),MsgModel.class);
+        messageService.receiveMsg(msgModel);
+        ctx.fireChannelRead(msg.retain());
     }
 
     @Override

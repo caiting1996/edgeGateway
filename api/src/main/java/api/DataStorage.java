@@ -9,7 +9,7 @@ import java.util.Map;
 public interface DataStorage {
     void test();
     void storageData(DeviceModel deviceModel) throws IOException;
-    DeviceModel getData(String deviceId);
+    String getData(String deviceId);
     void updateData(DeviceModel deviceModel);
     void deleteData(String deviceId);
     void storageData(Map map) throws IOException;

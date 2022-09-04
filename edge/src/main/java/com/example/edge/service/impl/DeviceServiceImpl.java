@@ -6,6 +6,8 @@ import com.example.edge.config.NettyConfig;
 import com.example.edge.db.DataStorageContext;
 import enums.MsgType;
 import io.netty.channel.Channel;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 import model.DeviceModel;
 import model.MsgModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 @Service
 public class DeviceServiceImpl implements DeviceService {
+    private static final InternalLogger log = InternalLoggerFactory.getInstance(DeviceServiceImpl.class);
     @Autowired
     private MessageService messageService;
     @Override

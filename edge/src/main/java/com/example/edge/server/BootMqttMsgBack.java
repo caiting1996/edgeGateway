@@ -138,7 +138,7 @@ public class BootMqttMsgBack {
             NettyConfig.getTopicMap().put(topic,list);
             log.info("topic已绑定channel",topic);
             System.out.println(NettyConfig.getTopicMap().get(topic));
-            List<String> topicList=NettyConfig.getTopicMap().getOrDefault(topic, new ArrayList<String>());
+            List<String> topicList=NettyConfig.getChannelTopicMap().getOrDefault(channel, new ArrayList<String>());
             topicList.add(topic);
             NettyConfig.getChannelTopicMap().put(channel,topicList);
 

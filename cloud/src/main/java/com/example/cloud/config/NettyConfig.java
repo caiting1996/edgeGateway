@@ -19,7 +19,7 @@ public class NettyConfig {
      * 存放客户端与Chanel的对应信息，用于给指定客户端发送消息
      */
     private static ConcurrentHashMap<String, Channel> userChannelMap = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<String, Channel> deviceChannelMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, String> deviceChannelMap = new ConcurrentHashMap<>();
 
     private NettyConfig() {}
 
@@ -43,7 +43,7 @@ public class NettyConfig {
      * 获取设备channel map
      * @return
      */
-    public static ConcurrentHashMap<String,Channel> getDeviceChannelMap(){
+    public static ConcurrentHashMap<String,String> getDeviceChannelMap(){
         return deviceChannelMap;
     }
 }

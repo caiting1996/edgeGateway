@@ -20,7 +20,7 @@ public class DataBaseStorage implements DataStorage {
     }
 
     @Override
-    public DeviceModel getData(String deviceId) {
+    public String getData(String deviceId) {
         return null;
     }
 
@@ -36,6 +36,6 @@ public class DataBaseStorage implements DataStorage {
 
     @Override
     public void storageData(Map map) throws IOException {
-        
+
     }
 }

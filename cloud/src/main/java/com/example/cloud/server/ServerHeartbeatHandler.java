@@ -1,11 +1,10 @@
 package com.example.cloud.server;
 
+import com.example.cloud.config.NettyConfig;
 import com.example.cloud.db.DataStorageContext;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -16,17 +15,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ChannelHandler.Sharable
-public class ServerHeartbeatHandler extends ChannelInboundHandlerAdapter {
+public class ServerHeartbeatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     private static final InternalLogger log = InternalLoggerFactory.getInstance(ServerHeartbeatHandler.class);
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("server channelRead:{}", msg);
-        if (msg.equals("ping")) {
-            ctx.channel().writeAndFlush("pong");
+    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
+        log.info("server channelRead:{}", msg.text());
+        if (msg.text().equals("ping")) {
+            ctx.channel().writeAndFlush(new TextWebSocketFrame("pong"));
         } else {
-            //由下一个handler处理,示例中则为SimpleServerHandler
-            ctx.fireChannelRead(msg);
+            //由下一个handler处理
+            ctx.fireChannelRead(msg.retain());
         }
     }
 
@@ -36,11 +35,12 @@ public class ServerHeartbeatHandler extends ChannelInboundHandlerAdapter {
             AttributeKey<String> userKey = AttributeKey.valueOf("userId");
             //从通道中获取用户token
             String userId = ctx.channel().attr(userKey).get();
-            System.out.println(userId);
             AttributeKey<String> tokenKey = AttributeKey.valueOf("token");
             //从通道中获取用户token
             String token = ctx.channel().attr(tokenKey).get();
-            System.out.println("token="+token);
+            log.info("将user和channel绑定");
+            NettyConfig.getUserChannelMap().put(userId,ctx.channel());
+            log.info("连接成功,channel{}",ctx.channel());
             //校验token逻辑
             if (!token.equals(DataStorageContext.getFileStorage().getData(userId))) {
                 System.out.println("验签失败，关闭连接");

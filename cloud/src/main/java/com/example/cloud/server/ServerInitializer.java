@@ -38,8 +38,10 @@ public class ServerInitializer extends NettyInitializer {
         2、这就是为什么，当浏览器发送大量数据时，就会发送多次http请求
          */
         ch.pipeline().addLast(new HttpObjectAggregator(8192));
+
         ch.pipeline().addLast(httpHandler);
-        ch.pipeline().addLast(new IdleStateHandler(10, 0, 0));
+
+
         /*
         说明：
         1、对应webSocket，它的数据是以帧（frame）的形式传递
@@ -49,7 +51,7 @@ public class ServerInitializer extends NettyInitializer {
         //ch.pipeline().addLast(new WebSocketServerProtocolHandler(webSocketPath, WEBSOCKET_PROTOCOL, true, 65536 * 10));
         ch.pipeline().addLast(new WebSocketServerProtocolHandler(webSocketPath,true));
         // 自定义的handler，处理业务逻辑
-        ch.pipeline().addLast(httpHandler);
+        ch.pipeline().addLast(new IdleStateHandler(10, 1, 1));
         ch.pipeline().addLast(serverHeartbeatHandler);
         ch.pipeline().addLast(handler);
 

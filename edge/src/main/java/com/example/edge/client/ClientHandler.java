@@ -1,5 +1,6 @@
 package com.example.edge.client;
 
+import api.MessageService;
 import cn.hutool.json.JSONObject;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -7,9 +8,11 @@ import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
+import model.MsgModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import util.JsonUtil;
 
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +28,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
     ChannelPromise handshakeFuture;
     @Autowired
     private NettyClient client;
+    @Autowired
+    private MessageService messageService;
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("当前握手的状态"+this.handshaker.isHandshakeComplete());
@@ -54,6 +59,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
             if (frame instanceof TextWebSocketFrame) {
                 TextWebSocketFrame textFrame = (TextWebSocketFrame)frame;
                 System.out.println("客户端接收的消息是:"+textFrame.text());
+                messageService.receiveMsg(JsonUtil.string2Obj(textFrame.text(), MsgModel.class));
             }
             //二进制信息
             if (frame instanceof BinaryWebSocketFrame) {
